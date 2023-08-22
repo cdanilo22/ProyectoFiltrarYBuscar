@@ -31,7 +31,7 @@ const datosBusqueda = {
 
 //eventos
 document.addEventListener('DOMContentLoaded', () => {
-    mostrarAutos(); //muestra los autos al cargar
+    mostrarAutos(autos); //muestra los autos al cargar
 
 
     // Llena las opciones de años
@@ -47,16 +47,19 @@ marca.addEventListener('change', e => {
 })
 
 year.addEventListener('change', e => {
-    datosBusqueda.year = e.target.value
+    datosBusqueda.year = parseInt(e.target.value)
+    filtrarAuto();
 })
 
 
 minimo.addEventListener('change', e => {
     datosBusqueda.minimo = e.target.value;
+    filtrarAuto();
 })
 
 maximo.addEventListener('change', e => {
     datosBusqueda.maximo = e.target.value
+    filtrarAuto();
 })
 
 puertas.addEventListener('change', e => {
@@ -74,7 +77,9 @@ color.addEventListener('change', e => {
 
 //funciones
 
-function mostrarAutos(){
+function mostrarAutos(autos){
+
+    limpiarHtml(); //Elimina el html previo
     autos.forEach(auto => {
 
         const {marca, modelo, year, puertas, transmision, precio, color} = auto;
@@ -91,6 +96,12 @@ function mostrarAutos(){
     })
 }
 
+// Limpiar HTML
+    function limpiarHtml(){
+        while(resultado.firstChild){
+            resultado.removeChild(resultado.firstChild);
+        }
+    }
 
 //Genera los años del select
 
@@ -106,8 +117,10 @@ function llenarSelect(){
 
 //Función que filtra en base a la búsqueda
 function filtrarAuto(){
-   const resultado = autos.filter(filtrarMarca)
-   console.log(resultado);
+   const resultado = autos.filter(filtrarMarca).filter(filtrarYear).filter(filtrarMinimo).filter(filtrarMaximo)
+   //console.log(resultado);
+
+   mostrarAutos(resultado);
 }
 
 
@@ -119,3 +132,33 @@ function filtrarMarca(auto){
 
     return auto;
 }
+
+function filtrarYear(auto){
+    const {year} = datosBusqueda;
+
+
+
+    if(year){
+        return auto.year === year;
+    }
+    return auto;
+}
+
+function filtrarMinimo(auto){
+    const {minimo} = datosBusqueda;
+    if(minimo){
+        return auto.precio >= minimo
+    }
+    return auto;
+
+}
+
+function filtrarMaximo(auto){
+    const {maximo} = datosBusqueda;
+    if(maximo){
+        return auto.precio <= maximo
+    }
+    return auto;
+
+}
+
